@@ -1,0 +1,79 @@
+#header {
+	text-align: center;
+}
+
+.gray {
+    color: gray;
+}
+
+.textIndent {
+    text-indent: 2em;
+}
+
+.talkLeft, .talkRight {
+    float: left;
+    height: 480px;
+    padding: 10px 10px;
+}
+
+.talkLeft {
+    width: 625px;
+}
+
+#talkFrame {
+    height: 360px;
+    padding: 5px 5px;
+    margin-bottom: 10px;
+    overflow-y: scroll;
+    overflow-x: none;
+}
+
+#inputDiv {
+    margin-bottom: 5px;
+}
+
+#message {
+    width: 623px;
+    height: 60px;
+    border: 0px;
+}
+
+.page {
+    overflow: hidden;
+    width: 890px;
+    margin: 0 auto;
+    background: #FFFFFF;
+    font-size: 12px;
+    padding: 10px 10px;
+    margin-top: 50px;
+}
+
+#onlineUsers {
+    width: 225px;
+    height: 480px;
+    overflow-y: scroll;
+    overflow-x: none;
+}
+
+.page, #talkFrame, #onlineUsers,#message {
+    border-radius: 10px 10px 10px 10px;
+    -moz-box-shadow: 1px 1px 10px #333333;
+    -webkit-box-shadow: 1px 1px 10px #333333;
+    box-shadow: 1px 1px 10px #333333;
+}
+
+#send {
+	vertical-align: text-top;
+	float: right;
+}
+
+#createroom {
+	vertical-align: text-top;
+	float: left;
+}
+#open {
+	vertical-align: text-top;
+}
+#nickInput {
+	vertical-align: text-top;
+}
