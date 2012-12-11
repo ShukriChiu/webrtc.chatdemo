@@ -1,0 +1,15 @@
+html
+  head
+    title Example webrtc.io
+    link(type='text/css', href='stylesheets/rtcstyle.css', rel='stylesheet')
+    script(src='/javascripts/webrtc-client.js')
+    script(src='/javascripts/client.js')  
+  body(onload='init()')
+    #videos
+      video#you.flip(autoplay='autoplay')
+    #chatbox
+      button#fullscreen Enter Full Screen
+      button#newRoom Create A New Room
+      #messages
+      br
+      input#chatinput(type='text')
