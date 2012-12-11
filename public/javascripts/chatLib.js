@@ -12,8 +12,9 @@
 	// 服务端口
 	exports.PORT = 8000;
 
-	// 服务端口
-	exports.HOST = "localhost";
+	// 服务端口 
+	// need to alter to your ip adress
+	exports.HOST = "192.168.175.103";
 
 	var analyzeMessageData = exports.analyzeMessageData = function(message) {
 			try {

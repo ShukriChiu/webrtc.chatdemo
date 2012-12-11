@@ -213,6 +213,9 @@ $(document).ready(function() {
     $("#send").click(function(event) {
         sendMsg();
     });
+    $("#createroom").click(function(event) {
+        window.open(window.location + 'rtc');
+    });
 
 
     function show(value) {

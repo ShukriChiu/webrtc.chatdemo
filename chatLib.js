@@ -10,10 +10,10 @@
 	};
 
 	// 服务端口
-	exports.PORT = 9800;
+	exports.PORT = 8000;
 
 	// 服务端口
-	exports.HOST = "localhost";
+	exports.HOST = "192.168.175.103";
 
 	var analyzeMessageData = exports.analyzeMessageData = function(message) {
 			try {

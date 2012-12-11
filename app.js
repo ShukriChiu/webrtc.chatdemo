@@ -5,11 +5,12 @@
 var express = require('express'),
     routes = require('./routes'),
     user = require('./routes/user'),
+    rtc = require('./routes/rtc'),
     http = require('http'),
     path = require('path'),
     WebSocketServer = require('ws').Server,
     chatLib = require("./chatLib"),
-    zTool = require("./zTool"),
+    zTool = require("./zTool.js"),
     EVENT_TYPE = chatLib.EVENT_TYPE,
     PORT = chatLib.PORT,
     onlineUserMap = new zTool.SimpleMap(),
@@ -18,6 +19,7 @@ var express = require('express'),
     uid = null;
 
 var app = express();
+
 
 app.configure(function() {
     app.set('port', process.env.PORT || 8000);
@@ -29,6 +31,8 @@ app.configure(function() {
     app.use(express.methodOverride());
     app.use(app.router);
     app.use(express.static(path.join(__dirname, 'public')));
+    app.use(express.static(path.join(__dirname, 'components')));
+
 });
 
 app.configure('development', function() {
@@ -37,12 +41,15 @@ app.configure('development', function() {
 
 app.get('/', routes.index);
 app.get('/users', user.list);
+app.get('/rtc', rtc.open);
 var server = http.createServer(app).listen(app.get('port'), function() {
     console.log("Express server listening on port " + app.get('port'));
 });
+
 wss = new WebSocketServer({
     server: server
 });
+
 
 wss.on('connection', function(conn) {
     // conn.on('open',function() {
@@ -145,3 +152,47 @@ wss.on('connection', function(conn) {
     });
 });
 console.log('Start listening on port ' + PORT);
+
+
+/**
+*   RTC code
+*/
+var webRTC = require('webrtc.io').listen(8001);
+
+webRTC.rtc.on('connect', function(rtc) {
+  //Client connected
+});
+
+webRTC.rtc.on('send answer', function(rtc) {
+  //answer sent
+});
+
+webRTC.rtc.on('disconnect', function(rtc) {
+  //Client disconnect 
+});
+
+webRTC.rtc.on('chat_msg', function(data, socket) {
+  var roomList = webRTC.rtc.rooms[data.room] || [];
+
+  for (var i = 0; i < roomList.length; i++) {
+    var socketId = roomList[i];
+
+    if (socketId !== socket.id) {
+      var soc = webRTC.rtc.getSocket(socketId);
+
+      if (soc) {
+        soc.send(JSON.stringify({
+          "eventName": "receive_chat_msg",
+          "data": {
+            "messages": data.messages,
+            "color": data.color
+          }
+        }), function(error) {
+          if (error) {
+            console.log(error);
+          }
+        });
+      }
+    }
+  }
+});

@@ -5,6 +5,7 @@
   	"start": "node app.js"
   },
   "dependencies": {
-    "bootstrap": "latest"
+    "bootstrap": "latest",
+    "jquery" : "latest"
   }
 }
