@@ -1,11 +1,11 @@
-webrtc.chatdemo
-===============
+# webrtc.chatdemo
 
 
-本程序是基于websocket和webrtc做的一个在线实时视频流聊天室。
+### Introduce
+本程序是基于websocket和webrtc做的一个在线实时视频流聊天室，制作起因是由于计算机网络课程的一个课程加分Project，顺带可以用来参加一个比赛，然后基于github上的一些开源项目做出了自己的一些修改和整合，现在依然还在不断改进之中。
 
 
-### License ###
+### License 
 Copyright (C) 2012 [Sergio Zhao](https://github.com/zsj2145676)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
