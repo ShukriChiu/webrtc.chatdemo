@@ -18,10 +18,6 @@ $(document).ready(function() {
     Cufon.replace("h1");
     Cufon.set("fontSize", "150px");
     Cufon.set("color", "black");
-    $(".rte-zone").rte({
-        content_css_url: "/stylesheets/rte.css",
-        media_url: "/images/",
-    });
     if(typeof WebSocket === 'undefined') {
         $("#prePage").hide();
         $("#errorPage").show();
