@@ -3,11 +3,13 @@ extends layout
 block content
     #header
         h1
-            | Free WebRTC Chating Room !
+            | Jolly
+        h3
+            | Simple and Graceful Web Chating Lab
     #errorPage.page(style='display: none;')
         h1
             | 当前浏览器不支持WebSocket，请使用chrome or opera or firefox 18
-    #prePage.page(style='width: 690px; text-align: center;')
+    #prePage
       input#nickInput(type='text', placeholder='请输入您的昵称')
       input#open.btn(type='button',value='进入聊天室')
     #mainPage.page(style='display:none;')
@@ -15,11 +17,10 @@ block content
         .talkLeft
             #talkFrame
             #inputDiv
-            textarea#message(placeholder='嗨，随便说点啥呗')
+            textarea#message(row='3',placeholder='嗨，随便说点啥呗,支持HTML代码')
+
             div(style='overflow: hidden;')
                 input#createroom.btn(type='button', value='加入大众视频聊天室')
                 input#send.btn.btn-success(type='button', value='发送')
         .talkRight
             #onlineUsers 
-            div(style='text-align: center;')
-                a(style='color: blue;', target='_blank', href='https://github.com/zsj2145676') 获取源码

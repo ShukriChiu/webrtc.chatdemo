@@ -1,6 +1,8 @@
       var videos = [];
       var rooms = [1, 2, 3, 4, 5];
-      var PeerConnection = window.PeerConnection || window.webkitPeerConnection00 || window.webkitRTCPeerConnection;
+      var PeerConnection = window.PeerConnection || window.webkitPeerConnection00 || window.webkitRTCPeerConnection || window.webkitDeprecatedPeerConnection || window.webkitPeerConnection;
+
+      // set video's layout in page , automaticly adapt to fit the best layout
 
       function getNumPerRow() {
         var len = videos.length;
@@ -115,11 +117,7 @@
                 "room": room,
                 "color": color
               }
-            }), function(error) {
-              if(error) {
-                console.log(error);
-              }
-            });
+            }));
             addToChat(input.value);
             input.value = "";
           }
@@ -132,6 +130,7 @@
 
 
       function init() {
+        alert(self.webkitDeprecatedPeerConnection || self.webkitPeerConnection);
         if(PeerConnection) {
           rtc.createStream({
             "video": true,
@@ -152,7 +151,7 @@
         var room = window.location.hash.slice(1);
         //need to alter to your ip address
         //When using localhost
-        rtc.connect("ws://192.168.175.103:8001", room);
+        rtc.connect("ws://localhost:8001", room);
 
         rtc.on('add remote stream', function(stream, socketId) {
           console.log("ADDING REMOTE STREAM...");

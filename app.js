@@ -171,6 +171,7 @@ webRTC.rtc.on('disconnect', function(rtc) {
   //Client disconnect 
 });
 
+//大众聊天室聊天功能
 webRTC.rtc.on('chat_msg', function(data, socket) {
   var roomList = webRTC.rtc.rooms[data.room] || [];
 

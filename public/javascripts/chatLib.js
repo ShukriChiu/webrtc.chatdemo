@@ -14,7 +14,7 @@
 
 	// 服务端口 
 	// need to alter to your ip adress
-	exports.HOST = "192.168.175.103";
+	exports.HOST = "localhost";
 
 	var analyzeMessageData = exports.analyzeMessageData = function(message) {
 			try {

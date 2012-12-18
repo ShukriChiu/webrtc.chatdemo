@@ -1,7 +1,12 @@
 var HOST = chatLib.HOST;
 var EVENT_TYPE = chatLib.EVENT_TYPE;
 var PORT = chatLib.PORT;
-
+// TODO:
+//  1 scroll panel 
+//  2 support mardown( try)
+//  3 support image
+//  4 advanced UI
+//
 $(document).ready(function() {
     var socket = null;
     var onlineUserMap = new zTool.SimpleMap();
@@ -10,7 +15,13 @@ $(document).ready(function() {
     var uid = 1;
     var connCounter = 1;
     var flag = 0;
-
+    Cufon.replace("h1");
+    Cufon.set("fontSize", "150px");
+    Cufon.set("color", "black");
+    $(".rte-zone").rte({
+        content_css_url: "/stylesheets/rte.css",
+        media_url: "/images/",
+    });
     if(typeof WebSocket === 'undefined') {
         $("#prePage").hide();
         $("#errorPage").show();
@@ -39,6 +50,7 @@ $(document).ready(function() {
                 } else {
                     html.push(formatUserString(users[i]));
                 }
+
                 html.push("</div>");
             }
         }
@@ -86,6 +98,7 @@ $(document).ready(function() {
             alert('请先输入昵称');
             return;
         }
+        $("#header").hide();
         $("#prePage").hide();
         $("#mainPage").show();
         reset();
@@ -216,7 +229,9 @@ $(document).ready(function() {
     $("#createroom").click(function(event) {
         window.open(window.location + 'rtc');
     });
-
+    $("#chat").click(function(event) {
+        alert("123");
+    });
 
     function show(value) {
         $("#response").html(value);

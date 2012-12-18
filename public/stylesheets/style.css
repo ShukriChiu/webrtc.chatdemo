@@ -1,11 +1,20 @@
+body{
+    background-image:url("/images/Bob.png");
+    background-repeat:no-repeat;
+    background-size: 100% 1080px;
+}
 #header {
-	text-align: center;
+    text-align: center;
+    position: absolute;
+    left: 60%;
+    top: 20%;
 }
-
-.gray {
-    color: gray;
+#prePage{
+    text-align: center;
+    position: absolute;
+    left: 63%;
+    top: 50%;
 }
-
 .textIndent {
     text-indent: 2em;
 }
@@ -24,18 +33,15 @@
     height: 360px;
     padding: 5px 5px;
     margin-bottom: 10px;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: none;
-}
 
-#inputDiv {
-    margin-bottom: 5px;
 }
 
 #message {
     width: 623px;
     height: 60px;
-    border: 0px;
+/*    border: 0px;*/
 }
 
 .page {
@@ -51,7 +57,7 @@
 #onlineUsers {
     width: 225px;
     height: 480px;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: none;
 }
 

@@ -1,3 +1,6 @@
+/**
+*  主要实现SImpleMap和CircleList两个工具类
+*/
 (function(exports) {
 	var SimpleMap = exports.SimpleMap = function() {
 			this.map = {};
