@@ -39,8 +39,12 @@ body{
 }
 
 #message {
-    width: 623px;
+    width: 625px;
     height: 60px;
+    padding: 5px 5px;
+    margin-bottom: 10px;
+    overflow-y: auto;
+    overflow-x: none;
 /*    border: 0px;*/
 }
 
@@ -83,3 +87,8 @@ body{
 #nickInput {
 	vertical-align: text-top;
 }
+
+#display p{display:block;padding:.3em .1em;color:#000000;cursor:pointer;}
+#display p:hover{background-color:#ff0000;text-decoration:none;color:#f9f9f9;-webkit-transition:color .2s linear;}
+
+.click {background-color:#ff0000;text-decoration:none;color:#f9f9f9;-webkit-transition:color .2s linear;}

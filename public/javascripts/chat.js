@@ -1,69 +1,96 @@
 var HOST = chatLib.HOST;
 var EVENT_TYPE = chatLib.EVENT_TYPE;
 var PORT = chatLib.PORT;
-// TODO:
-//  1 scroll panel 
-//  2 support mardown( try)
-//  3 support image
-//  4 advanced UI
-//
+
 $(document).ready(function() {
-    var socket = null;
-    var onlineUserMap = new zTool.SimpleMap();
-    var currentUser = null;
-    var currentUserNick = null;
-    var uid = 1;
-    var connCounter = 1;
+    var socket = null; //define socket
+    var onlineUserMap = new zTool.SimpleMap(); // 在页面维护用户表
+    var currentUser = null; //  当前用户
+    var currentUserNick = null; // 当前用户名
+    var uid = 1; //用户uid
+    var connCounter = 1; // 用户登陆计数器，用户刷新用户列表
     var flag = 0;
+    var selecteduser = new zTool.SimpleMap();
+    var receivemap = new zTool.SimpleMap();
+    // 页面字体渲染
     Cufon.replace("h1");
     Cufon.set("fontSize", "150px");
     Cufon.set("color", "black");
+    //判断浏览器是否支持websocket
     if(typeof WebSocket === 'undefined') {
         $("#prePage").hide();
         $("#errorPage").show();
     }
-
-    // function deleteUser(id) {
-    //     console.log('come in' + id);
-    //     if(onlineUserMap.size() > 0) {
-    //         var keyset = onlineUserMap.keySet();
-    //         for(var i in keyset) {
-    //             if(onlineUserMap.get(keyset[i]).uid == id) {
-    //                 onlineUserMap.remove(keyset[i]);
-    //             }
-    //         }
-    //     }
-    // }
+    // 刷新在线用户列表
 
     function updateOnlineUser() {
-        var html = ["<div>在线用户(" + onlineUserMap.size() + ")</div>"];
+        var html = ["<div id = 'display'>在线用户(" + onlineUserMap.size() + ")"];
         if(onlineUserMap.size() > 0) {
             var users = onlineUserMap.values();
             for(var i in users) {
-                html.push("<div>");
                 if(users[i].uid == currentUser.uid) {
-                    html.push("<b>" + formatUserString(users[i]) + "(我)</b>");
+                    html.push("<p id =" + users[i].uid + ">" + generalformatUserString(users[i]) + "(我)" + users[i].ip + "</p>");
                 } else {
-                    html.push(formatUserString(users[i]));
+                    html.push("<p id =" + users[i].uid + ">" + generalformatUserString(users[i]) + users[i].ip + "</p>");
                 }
-
-                html.push("</div>");
             }
         }
+        html.push("</div>")
 
         $("#onlineUsers").html(html.join(''));
+        $("#display>p").toggle(
+
+        function() {
+            selecteduser.put($(this).attr('id'), onlineUserMap.get($(this).attr('id')));
+            console.log(selecteduser);
+            $(this).addClass('click');
+
+        }, function() {
+            $(this).removeClass('click');
+            selecteduser.remove($(this).attr('id'));
+            console.log(selecteduser);
+        });
     }
+    // 显示用户发言
 
     function appendMessage(msg) {
         $("#talkFrame").append("<div>" + msg + "</div>");
     }
+    // 给用户发言添加颜色
 
     function formatUserString(user) {
         if(!user) {
             return '';
         }
-        return user.nick + "<span class='gray'>(" + user.uid + ")</span> ";
+        if(user.uid != currentUser.uid) {
+            return currentUser.nick + "<span>(" + currentUser.uid + ")</span> " + "对" + user.nick + "(" + user.uid + ")" + "说:";
+        } else {
+            return currentUser.nick + "<span>(" + currentUser.uid + ")</span> " + "对自己说:";
+        }
+        return null;
     }
+
+    function formatAllUserString(user) {
+        if(!user) {
+            return '';
+        }
+        return user.nick + "<span>" + user.uid + ")</span> " + "对大家说:";
+    }
+
+    function formatReceiveUserTalkString(user) {
+        if(!user) {
+            return '';
+        }
+        return user.nick + "<span>(" + user.uid + ")</span>" + "对你说:";
+    }
+
+    function generalformatUserString(user) {
+        if(!user) {
+            return '';
+        }
+        return user.nick + "<span class='gray'> (" + user.uid + ") ";
+    }
+    // 给用户发言添加时间
 
     function formatUserTalkString(user) {
         return formatUserString(user) + new Date().format("hh:mm:ss") + " ";
@@ -72,6 +99,7 @@ $(document).ready(function() {
     function formatUserTalkHisString(user, time) {
         return formatUserString(user) + new Date(time).format("yyyy-MM-dd hh:mm:ss") + " ";
     }
+    // 复位页面所有变量
 
     function reset() {
         if(socket) {
@@ -87,20 +115,22 @@ $(document).ready(function() {
     function close() {
 
     }
-
+    //点击进入之后处理
     $("#open").click(function(event) {
         currentUserNick = $.trim($("#nickInput").val());
         if('' == currentUserNick) {
             alert('请先输入昵称');
             return;
         }
+        //显示聊天界面
         $("#header").hide();
         $("#prePage").hide();
         $("#mainPage").show();
         reset();
-
+        // 连接websocket
         socket = new WebSocket("ws://" + HOST + ":" + PORT);
         onlineUserMap = new zTool.SimpleMap();
+        //监听事件
         socket.onmessage = function(event) {
             var mData = chatLib.analyzeMessageData(event.data);
 
@@ -116,7 +146,7 @@ $(document).ready(function() {
                     connCounter = mData.counter;
                     onlineUserMap.clone(mData.values[1]);
                     updateOnlineUser();
-                    appendMessage(formatUserTalkString(newUser) + "[进入房间]");
+                    appendMessage(generalformatUserString(newUser) + "[进入房间]");
                     break;
 
                 case EVENT_TYPE.LOGOUT:
@@ -124,15 +154,28 @@ $(document).ready(function() {
                     var user = mData.values[0];
                     onlineUserMap.remove(user.uid);
                     updateOnlineUser();
-                    appendMessage(formatUserTalkString(user) + "[离开房间]");
+                    appendMessage(generalformatUserString(user) + "[离开房间]");
                     break;
 
                 case EVENT_TYPE.SPEAK:
                     // 用户发言
                     var content = mData.values[0];
                     if(mData.user.uid != currentUser.uid) {
-                        appendMessage(formatUserTalkString(mData.user));
-                        appendMessage("<span>&nbsp;&nbsp;</span>" + content);
+                        if(mData.values[1]) {
+                            receivemap.clone(mData.values[1]);
+                            uids = receivemap.keySet();
+                            for(i in uids) {
+                                if(uids[i] == currentUser.uid) {
+                                    appendMessage(formatReceiveUserTalkString(mData.user));
+                                    appendMessage("<span>&nbsp;&nbsp;</span>" + content);
+                                }
+                            }
+
+                        } else {
+                            appendMessage(formatAllUserString(mData.user));
+                            appendMessage("<span>&nbsp;&nbsp;</span>" + content);
+                        }
+
                     }
                     break;
 
@@ -174,16 +217,16 @@ $(document).ready(function() {
 
             }
         };
-
+        // 处理出错
         socket.onerror = function(event) {
             appendMessage("[网络出错啦，请稍后重试...]");
         };
-
+        // 处理服务器端关闭
         socket.onclose = function(event) {
             appendMessage("[网络连接已被关闭...]");
             close();
         };
-
+        // 连接建立就显示历史信息，刷新在线用户列表 
         socket.onopen = function(event) {
             socket.send(JSON.stringify({
                 'EVENT': EVENT_TYPE.LOGIN,
@@ -199,23 +242,38 @@ $(document).ready(function() {
             }));
         };
     });
-
+    // 让enter键可以输入信息
     $("#message").keyup(function(event) {
         if(13 == event.keyCode) {
             sendMsg();
         }
     });
+    // 发送用户发言
 
     function sendMsg() {
         var value = $.trim($("#message").val());
         if(value) {
             $("#message").val('');
-            appendMessage(formatUserTalkString(currentUser));
-            appendMessage("<span>&nbsp;&nbsp;</span>" + value);
-            socket.send(JSON.stringify({
-                'EVENT': EVENT_TYPE.SPEAK,
-                'values': [currentUser.uid, value]
-            }));
+            if(selecteduser.size() == 0) {
+                appendMessage(formatAllUserString(currentUser));
+                appendMessage("<span>&nbsp;&nbsp;</span>" + value);
+                socket.send(JSON.stringify({
+                    'EVENT': EVENT_TYPE.SPEAK,
+                    'values': [currentUser.uid, value]
+                }));
+            } else {
+                var uids = selecteduser.keySet();
+                for(var i in uids) {
+                    appendMessage(formatUserTalkString(onlineUserMap.get(uids[i])));
+                    appendMessage("<span>&nbsp;&nbsp;</span>" + value);
+                }
+                socket.send(JSON.stringify({
+                    'EVENT': EVENT_TYPE.SPEAK,
+                    'values': [currentUser.uid, value, selecteduser]
+                }));
+            }
+
+
         }
     };
 
@@ -224,9 +282,6 @@ $(document).ready(function() {
     });
     $("#createroom").click(function(event) {
         window.open(window.location + 'rtc');
-    });
-    $("#chat").click(function(event) {
-        alert("123");
     });
 
     function show(value) {

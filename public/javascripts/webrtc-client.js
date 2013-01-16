@@ -25,6 +25,7 @@ var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || nav
     rtc._events[eventName].push(callback);
   };
 
+  //将参数应用到前面的方法中
   rtc.fire = function(eventName, _) {
     var events = rtc._events[eventName];
     var args = Array.prototype.slice.call(arguments, 1);

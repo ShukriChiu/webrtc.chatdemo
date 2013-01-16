@@ -1,26 +1,29 @@
 /**
- * Module dependencies.
+ * 初始化变量
  */
-
 var express = require('express'),
-    routes = require('./routes'),
-    user = require('./routes/user'),
-    rtc = require('./routes/rtc'),
     http = require('http'),
     path = require('path'),
+    // 以上全部是express框架需要的定义
     WebSocketServer = require('ws').Server,
+    // define websocketserver
     chatLib = require("./chatLib"),
+    // 定义了一些工具类和外部变量
     zTool = require("./zTool.js"),
+    // 导入javascirpt实现的map和list
     EVENT_TYPE = chatLib.EVENT_TYPE,
+    //聊天室所有事件的定义
     PORT = chatLib.PORT,
     onlineUserMap = new zTool.SimpleMap(),
+    // 维护服务器端的用户map
     historyContent = new zTool.CircleList(100),
+    // 维护服务器端历史记录
     connCounter = 1,
-    uid = null;
-
+    // 用户登陆计数器
+    uid = null; // user id
 var app = express();
 
-
+// express 框架的一些设置
 app.configure(function() {
     app.set('port', process.env.PORT || 8000);
     app.set('views', __dirname + '/views');
@@ -38,10 +41,25 @@ app.configure(function() {
 app.configure('development', function() {
     app.use(express.errorHandler());
 });
-
-app.get('/', routes.index);
-app.get('/users', user.list);
-app.get('/rtc', rtc.open);
+/**
+ * 处理服务器端的业务逻辑
+ */
+var ip;
+app.get('/', function(req, res) {
+    res.render('index', {
+        title: 'Jolly'
+    });
+    ip = req.connection.remoteAddress;
+});
+app.get('/users', function(req, res) {
+    res.send("respond with a resource");
+});
+app.get('/rtc', function(req, res) {
+    res.render('rtc', {
+        title: 'Jolly'
+    });
+});
+// 启动服务器，并监听端口号
 var server = http.createServer(app).listen(app.get('port'), function() {
     console.log("Express server listening on port " + app.get('port'));
 });
@@ -50,23 +68,21 @@ wss = new WebSocketServer({
     server: server
 });
 
-
+// wss开始捕捉客户端的事件
 wss.on('connection', function(conn) {
-    // conn.on('open',function() {
-    //  conn.send(JSON.stringify({'uid':connCounter}));
-    // });
     conn.on('message', function(message) {
         var mData = chatLib.analyzeMessageData(message);
-
         if(mData && mData.EVENT) {
             switch(mData.EVENT) {
             case EVENT_TYPE.LOGIN:
                 // 新用户连接
                 uid = connCounter;
                 conn.socketid = uid;
+                conn.ip = ip;
                 var newUser = {
                     'uid': uid,
-                    'nick': chatLib.getMsgFirstDataValue(mData)
+                    'nick': chatLib.getMsgFirstDataValue(mData),
+                    'ip': ip
                 };
                 console.log('User:{\'uid\':' + newUser.uid + ',\'nickname\':' + newUser.nick + '}coming on protocol websocket draft ' + conn.protocolVersion);
                 console.log('current connecting counter: ' + wss.clients.length);
@@ -93,7 +109,7 @@ wss.on('connection', function(conn) {
                     wss.clients[i].send(JSON.stringify({
                         'user': onlineUserMap.get(chatLib.getMsgFirstDataValue(mData)),
                         'event': EVENT_TYPE.SPEAK,
-                        'values': [content]
+                        'values': [content, mData.values[2]]
                     }));
                 }
                 historyContent.add({
@@ -101,6 +117,7 @@ wss.on('connection', function(conn) {
                     'content': content,
                     'time': new Date().getTime()
                 });
+
                 break;
 
             case EVENT_TYPE.LIST_USER:
@@ -133,9 +150,11 @@ wss.on('connection', function(conn) {
             }));
         }
     });
+    // 出错信息处理
     conn.on('error', function() {
         console.log(Array.prototype.join.call(arguments, ", "));
     });
+    // 用户退出
     conn.on('close', function() {
         console.log('User:{\'uid\':' + conn.socketid + ',\'nickname\':' + onlineUserMap.get(conn.socketid).nick + '} logout');
         var logoutUser = onlineUserMap.remove(conn.socketid);
@@ -155,45 +174,45 @@ console.log('Start listening on port ' + PORT);
 
 
 /**
-*   RTC code
-*/
+ *   视频聊天模块
+ */
 var webRTC = require('webrtc.io').listen(8001);
 
 webRTC.rtc.on('connect', function(rtc) {
-  //Client connected
+    //Client connected
 });
 
 webRTC.rtc.on('send answer', function(rtc) {
-  //answer sent
+    //answer sent
 });
 
 webRTC.rtc.on('disconnect', function(rtc) {
-  //Client disconnect 
+    //Client disconnect 
 });
 
-//大众聊天室聊天功能
+//视频聊天室聊天功能
 webRTC.rtc.on('chat_msg', function(data, socket) {
-  var roomList = webRTC.rtc.rooms[data.room] || [];
+    var roomList = webRTC.rtc.rooms[data.room] || [];
 
-  for (var i = 0; i < roomList.length; i++) {
-    var socketId = roomList[i];
+    for(var i = 0; i < roomList.length; i++) {
+        var socketId = roomList[i];
 
-    if (socketId !== socket.id) {
-      var soc = webRTC.rtc.getSocket(socketId);
+        if(socketId !== socket.id) {
+            var soc = webRTC.rtc.getSocket(socketId);
 
-      if (soc) {
-        soc.send(JSON.stringify({
-          "eventName": "receive_chat_msg",
-          "data": {
-            "messages": data.messages,
-            "color": data.color
-          }
-        }), function(error) {
-          if (error) {
-            console.log(error);
-          }
-        });
-      }
+            if(soc) {
+                soc.send(JSON.stringify({
+                    "eventName": "receive_chat_msg",
+                    "data": {
+                        "messages": data.messages,
+                        "color": data.color
+                    }
+                }), function(error) {
+                    if(error) {
+                        console.log(error);
+                    }
+                });
+            }
+        }
     }
-  }
 });

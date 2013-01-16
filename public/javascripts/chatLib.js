@@ -35,9 +35,16 @@
 			return '';
 		}
 
-	var getMsgFirstDataValue = exports.getMsgSecondDataValue = function(mData) {
+	var getMsgSecondDataValue = exports.getMsgSecondDataValue = function(mData) {
 			if(mData && mData.values && mData.values[1]) {
 				return mData.values[1];
+			}
+
+			return '';
+		}
+	var getMsgThirdDataValue = exports.getMsgThirdDataValue = function(mData) {
+			if(mData && mData.values && mData.values[2]) {
+				return mData.values[2];
 			}
 
 			return '';

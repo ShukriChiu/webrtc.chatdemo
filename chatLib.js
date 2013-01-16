@@ -12,8 +12,9 @@
 	// 服务端口
 	exports.PORT = 8000;
 
-	// 服务端口
-	exports.HOST = "192.168.175.103";
+	// 服务端口 
+	// need to alter to your ip adress
+	exports.HOST = "localhost";
 
 	var analyzeMessageData = exports.analyzeMessageData = function(message) {
 			try {
@@ -34,9 +35,16 @@
 			return '';
 		}
 
-	var getMsgFirstDataValue = exports.getMsgSecondDataValue = function(mData) {
+	var getMsgSecondDataValue = exports.getMsgSecondDataValue = function(mData) {
 			if(mData && mData.values && mData.values[1]) {
 				return mData.values[1];
+			}
+
+			return '';
+		}
+	var getMsgThirdDataValue = exports.getMsgThirdDataValue = function(mData) {
+			if(mData && mData.values && mData.values[2]) {
+				return mData.values[2];
 			}
 
 			return '';
