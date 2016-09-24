@@ -8,6 +8,8 @@ Update:
 
 最近会开始更新项目，使用最新版本的Rails 搭建一个围绕Sneaker的兴趣小组
 
+在这里开始master branch 
+
 ### License 
 Copyright (C) 2012 [Shujian Zhao](https://github.com/shukrichiu)
 
